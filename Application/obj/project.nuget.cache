@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "/aZRsSNrRnp6mz4OWvca/jkH/qBZjwmutqdkbCvAMGgREDFy1G44u1SC7l5d4X27B2kwEZ7tmS+vw4zGstmOpg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Рита\\Desktop\\лабы\\EmployeesManagmentApp\\Application\\Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Рита\\.nuget\\packages\\microsoft.netcore.app.ref\\7.0.18\\microsoft.netcore.app.ref.7.0.18.nupkg.sha512",
+    "C:\\Users\\Рита\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\7.0.18\\microsoft.windowsdesktop.app.ref.7.0.18.nupkg.sha512",
+    "C:\\Users\\Рита\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\7.0.18\\microsoft.aspnetcore.app.ref.7.0.18.nupkg.sha512"
+  ],
+  "logs": []
+}
