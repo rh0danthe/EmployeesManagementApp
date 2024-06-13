@@ -1,3 +1,5 @@
+using Infrastructure.Migrations.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -10,6 +12,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.Migrate<Program>();
 
 app.UseHttpsRedirection();
 

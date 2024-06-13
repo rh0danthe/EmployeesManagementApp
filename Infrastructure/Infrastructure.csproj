@@ -12,8 +12,22 @@
 
     <ItemGroup>
       <Folder Include="Factories\" />
-      <Folder Include="Migrations\" />
       <Folder Include="Repository\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Dapper" Version="2.1.35" />
+      <PackageReference Include="dbup" Version="5.0.40" />
+      <PackageReference Include="dbup-postgresql" Version="5.0.40" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+      <PackageReference Include="Npgsql" Version="8.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Migrations\Scripts\001_initial.sql" />
+      <EmbeddedResource Include="Migrations\Scripts\001_initial.sql" />
     </ItemGroup>
 
 </Project>
