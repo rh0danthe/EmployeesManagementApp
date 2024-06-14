@@ -11,11 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Factories\" />
-      <Folder Include="Repository\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="Dapper" Version="2.1.35" />
       <PackageReference Include="dbup" Version="5.0.40" />
       <PackageReference Include="dbup-postgresql" Version="5.0.40" />
