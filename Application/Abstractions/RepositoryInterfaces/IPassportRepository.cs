@@ -8,4 +8,5 @@ public interface IPassportRepository
     
     public Task<Passport> GetByIdAsync(int id);
     public Task<Passport> UpdateAsync(Passport passport, int id);
+    public Task<bool> DeleteAsync(int id);
 }

@@ -23,11 +23,13 @@ public class EmployeeService : IEmployeeService
     
     public async Task<EmployeeCreateResponse> CreateAsync(EmployeeCreateRequest employee)
     {
-        var dbPassport = new Passport()
+        var passport = new Passport()
         {
             Number = employee.Passport.Number,
             Type = employee.Passport.Type
         };
+
+        var dbPassport = await _passportRepository.CreateAsync(passport);
 
         var dbDepartment = await _departmentRepository.GetByNameAsync(employee.Department.Name, employee.CompanyId);
         
@@ -49,29 +51,34 @@ public class EmployeeService : IEmployeeService
         var dbEmployee = await _employeeRepository.GetByIdAsync(id);
         var dbPassport = await _passportRepository.GetByIdAsync(dbEmployee.PassportId);
         var dbDepartment = await _departmentRepository.GetByIdAsync(dbEmployee.DepartmentId);
-        
+
+    
         bool flag = false;
         var updatedDepartment = new Department();
-        if (dbDepartment.Name != employee.Department.Name && employee.Department.Name != null)
-        {
-            flag = true;
-            updatedDepartment.Name = employee.Department.Name;
-        }
-        else updatedDepartment.Name = dbDepartment.Name;
-
-        if (dbDepartment.Phone != employee.Department.Phone && employee.Department.Phone != null)
-        {
-            flag = true;
-            updatedDepartment.Phone = employee.Department.Phone;
-        }
-        else updatedDepartment.Phone = dbDepartment.Phone;
-
         updatedDepartment.CompanyId = employee.CompanyId ?? dbEmployee.CompanyId;
-        if (flag)
+        if (employee.Department != null)
         {
-            var ifExists = await _departmentRepository.CheckIfExistsAsync(updatedDepartment);
-            if (!ifExists) throw new Exception("sfgdgsdf");
+            if (dbDepartment.Name != employee.Department.Name && employee.Department.Name != null)
+            {
+                flag = true;
+                updatedDepartment.Name = employee.Department.Name;
+            }
+            else updatedDepartment.Name = dbDepartment.Name;
+
+            if (dbDepartment.Phone != employee.Department.Phone && employee.Department.Phone != null)
+            {
+                flag = true;
+                updatedDepartment.Phone = employee.Department.Phone;
+            }
+            else updatedDepartment.Phone = dbDepartment.Phone;
+
+            if (flag)
+            {
+                updatedDepartment = await _departmentRepository.ReturnsIfExistsAsync(updatedDepartment);
+                if (updatedDepartment == null) throw new Exception("sfgdgsdf");
+            }
         }
+        else updatedDepartment = dbDepartment;
 
         var updatedEmployee = new Employee()
         {
@@ -81,26 +88,30 @@ public class EmployeeService : IEmployeeService
             Phone = employee.Phone ?? dbEmployee.Phone,
             CompanyId = employee.CompanyId ?? dbEmployee.CompanyId,
             PassportId = dbPassport.Id,
-            DepartmentId = updatedDepartment.CompanyId
+            DepartmentId = updatedDepartment.Id 
         };
 
         var updatedPassport = new Passport();
-        flag = false;
-        if (dbPassport.Number != employee.Passport.Number && employee.Passport.Number != null)
+        if (employee.Department != null)
         {
-            flag = true;
-            updatedPassport.Number = employee.Passport.Number;
-        }
-        else updatedPassport.Number = dbPassport.Number;
+            flag = false;
+            if (dbPassport.Number != employee.Passport.Number && employee.Passport.Number != null)
+            {
+                flag = true;
+                updatedPassport.Number = employee.Passport.Number;
+            }
+            else updatedPassport.Number = dbPassport.Number;
 
-        if (dbPassport.Type != employee.Passport.Type && employee.Passport.Type != null)
-        {
-            flag = true;
-            updatedPassport.Type = employee.Passport.Type;
-        }
-        else updatedPassport.Type = dbPassport.Type;
+            if (dbPassport.Type != employee.Passport.Type && employee.Passport.Type != null)
+            {
+                flag = true;
+                updatedPassport.Type = employee.Passport.Type;
+            }
+            else updatedPassport.Type = dbPassport.Type;
 
-        if (flag) await _passportRepository.UpdateAsync(updatedPassport, dbPassport.Id);
+            if (flag) await _passportRepository.UpdateAsync(updatedPassport, dbPassport.Id);
+        }
+        else updatedPassport = dbPassport;
 
         return MapEmployeeToResponse(await _employeeRepository.UpdateAsync(updatedEmployee, dbEmployee.Id),
             updatedDepartment, updatedPassport);
@@ -144,7 +155,12 @@ public class EmployeeService : IEmployeeService
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _employeeRepository.DeleteAsync(id);
+        var dbEmployee = await _employeeRepository.GetByIdAsync(id);
+        var res = await _employeeRepository.DeleteAsync(id);
+        bool res2 = false;
+        if (res)
+            res2 = await _passportRepository.DeleteAsync(dbEmployee.PassportId);
+        return (res) & (res2);
     }
     
     private EmployeeViewResponse MapEmployeeToResponse(Employee employee, Department department, Passport passport)

@@ -23,5 +23,5 @@ CREATE TABLE IF NOT EXISTS "Employees" (
    "Phone" text NOT NULL,
    "CompanyId" int REFERENCES "Companies"("Id"),
    "DepartmentId" int REFERENCES "Departments"("Id"),
-   "PassportId" int REFERENCES "Passports"("Id") ON DELETE CASCADE
+   "PassportId" int REFERENCES "Passports"("Id")
 );

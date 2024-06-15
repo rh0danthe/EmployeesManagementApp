@@ -35,19 +35,25 @@ public class DepartmentRepository : IDepartmentRepository
         return await connection.QueryFirstOrDefaultAsync<Department>(query, new {Name = name, CompanyId = companyId});
     }
 
-    public async Task<bool> CheckIfExistsAsync(Department department)
+    public async Task<Department> ReturnsIfExistsAsync(Department department)
     {
         using var connection = await _factory.CreateAsync();
         string query = "SELECT * FROM \"Departments\" WHERE \"CompanyId\" = @CompanyId AND \"Name\" = @Name AND \"Phone\" = @Phone";
-        var dbDepartment = await connection.QueryFirstOrDefaultAsync<Department>(query, department);
-        return dbDepartment != null;
+        return await connection.QueryFirstOrDefaultAsync<Department>(query, department);
     }
 
     public async Task<Department> UpdateAsync(Department department, int id)
     {
         using var connection = await _factory.CreateAsync();
         var query =
-            "UPDATE \"Departments\" SET \"Name\" = @Name, \"Phone\" = @Phone, \"CompanyId\" = @CompanyId WHERE \"Id\" = @Id RETURNING *";
-        return await connection.QueryFirstOrDefaultAsync<Department>(query, new { Id = id });
+            "UPDATE \"Departments\" SET \"Name\" = @Name, \"Phone\" = @Phone, \"CompanyId\" = @CompanyId WHERE \"Id\" = @id RETURNING *";
+        var parameters = new
+        {
+            Id = id,
+            Name = department.Name,
+            Phone = department.Phone,
+            CompanyId = department.CompanyId
+        };
+        return await connection.QueryFirstOrDefaultAsync<Department>(query, parameters);
     }
 }

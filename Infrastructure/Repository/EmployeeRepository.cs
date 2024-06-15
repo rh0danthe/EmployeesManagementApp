@@ -41,7 +41,7 @@ public class EmployeeRepository : IEmployeeRepository
     public async Task<ICollection<Employee>> GetAllByCompanyAsync(int companyId)
     {
         using var connection = await _factory.CreateAsync();
-        var query = "SELECT * FROM \"Employees\" WHERE \"Id\" = @id";
+        var query = "SELECT * FROM \"Employees\" WHERE \"CompanyId\" = @id";
         var employees = await connection.QueryAsync<Employee>(query, new { id = companyId });
         return employees.ToList();
     }
@@ -61,6 +61,16 @@ public class EmployeeRepository : IEmployeeRepository
             "UPDATE \"Employees\" SET \"Name\" = @Name, \"Surname\" = @Surname, \"Phone\" = @Phone, " +
             "\"CompanyId\" = @CompanyId, \"DepartmentId\" = @DepartmentId, \"PassportId\" = @PassportId" +
             " WHERE \"Id\" = @id RETURNING *";
-        return await connection.QueryFirstOrDefaultAsync<Employee>(query, new { id = employeeId });
+        var parameters = new
+        {
+            Id = employeeId,
+            Name = employee.Name,
+            Surname = employee.Surname,
+            Phone = employee.Phone,
+            CompanyId = employee.CompanyId,
+            DepartmentId = employee.DepartmentId,
+            PassportId = employee.PassportId
+        };
+        return await connection.QueryFirstOrDefaultAsync<Employee>(query, parameters);
     }
 }

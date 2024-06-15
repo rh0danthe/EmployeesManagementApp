@@ -33,6 +33,20 @@ public class PassportRepository : IPassportRepository
         using var connection = await _factory.CreateAsync();
         var query =
             "UPDATE \"Passports\" SET \"Type\" = @Type, \"Number\" = @Number WHERE \"Id\" = @Id RETURNING *";
-        return await connection.QueryFirstOrDefaultAsync<Passport>(query, new { Id = id });
+        var parameters = new
+        {
+            Id = id,
+            Type = passport.Type,
+            Number = passport.Number
+        };
+        return await connection.QueryFirstOrDefaultAsync<Passport>(query, parameters);
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        using var connection = await _factory.CreateAsync();
+        var query = "DELETE FROM \"Passports\" WHERE \"Id\" = @Id";
+        var res = await connection.ExecuteAsync(query, new { Id = id });
+        return res > 0;
     }
 }
