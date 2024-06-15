@@ -31,6 +31,13 @@ public class EmployeeRepository : IEmployeeRepository
         return res > 0;
     }
 
+    public async Task<Employee> GetByIdAsync(int id)
+    {
+        using var connection = await _factory.CreateAsync();
+        string query = "SELECT * FROM \"Employees\" WHERE \"Id\" = @Id";
+        return await connection.QueryFirstOrDefaultAsync<Employee>(query, new {Id = id});
+    }
+    
     public async Task<ICollection<Employee>> GetAllByCompanyAsync(int companyId)
     {
         using var connection = await _factory.CreateAsync();

@@ -28,6 +28,21 @@ public class DepartmentRepository : IDepartmentRepository
         return await connection.QueryFirstOrDefaultAsync<Department>(query, new {Id = id});
     }
 
+    public async Task<Department> GetByNameAsync(string name, int companyId)
+    {
+        using var connection = await _factory.CreateAsync();
+        string query = "SELECT * FROM \"Departments\" WHERE \"Name\" = @Name AND \"CompanyId\" = @CompanyId";
+        return await connection.QueryFirstOrDefaultAsync<Department>(query, new {Name = name, CompanyId = companyId});
+    }
+
+    public async Task<bool> CheckIfExistsAsync(Department department)
+    {
+        using var connection = await _factory.CreateAsync();
+        string query = "SELECT * FROM \"Departments\" WHERE \"CompanyId\" = @CompanyId AND \"Name\" = @Name AND \"Phone\" = @Phone";
+        var dbDepartment = await connection.QueryFirstOrDefaultAsync<Department>(query, department);
+        return dbDepartment != null;
+    }
+
     public async Task<Department> UpdateAsync(Department department, int id)
     {
         using var connection = await _factory.CreateAsync();
