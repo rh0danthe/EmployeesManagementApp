@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
+using System.Threading.Tasks;
 using Application.Abstractions.FactoryInterfaces;
 using Microsoft.Extensions.Configuration;
 using Npgsql;

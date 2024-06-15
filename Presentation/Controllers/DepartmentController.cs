@@ -1,4 +1,5 @@
-﻿using Application.Dto.DepartmentDto;
+﻿using System.Threading.Tasks;
+using Application.Dto.DepartmentDto;
 using Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,9 +14,8 @@ public class DepartmentController(IDepartmentService service) : Controller
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-
-        var res = await service.CreateAsync(department);
-        return Ok(res);
+        
+        return Ok(await service.CreateAsync(department));
     }
 
     [HttpPut("{departmentId}")]
@@ -23,7 +23,7 @@ public class DepartmentController(IDepartmentService service) : Controller
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-        var res = await service.UpdateAsync(department, departmentId);
-        return Ok(res);
+        
+        return Ok(await service.UpdateAsync(department, departmentId));
     }
 }

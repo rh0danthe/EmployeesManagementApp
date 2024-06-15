@@ -1,4 +1,5 @@
-﻿using Application.Abstractions.RepositoryInterfaces;
+﻿using System.Threading.Tasks;
+using Application.Abstractions.RepositoryInterfaces;
 using Application.Dto.CompanyDto;
 using Application.Services.Interfaces;
 using Domain.Entities;

@@ -1,4 +1,5 @@
-﻿using Application.Abstractions.FactoryInterfaces;
+﻿using System.Threading.Tasks;
+using Application.Abstractions.FactoryInterfaces;
 using Application.Abstractions.RepositoryInterfaces;
 using Dapper;
 using Domain.Entities;
@@ -17,7 +18,9 @@ public class CompanyRepository : ICompanyRepository
     public async Task<Company> CreateAsync(Company company)
     {
         using var connection = await _factory.CreateAsync();
+        
         var query = "INSERT INTO \"Companies\" (\"Name\") VALUES(@Name) RETURNING *";
+        
         return await connection.QueryFirstOrDefaultAsync<Company>(query, company);
     }
 }

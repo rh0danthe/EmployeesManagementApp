@@ -1,9 +1,10 @@
-﻿using Application.Dto.DepartmentDto;
+﻿using System.Threading.Tasks;
+using Application.Dto.DepartmentDto;
 
 namespace Application.Services.Interfaces;
 
 public interface IDepartmentService
 {
-    public Task<DepartmentCreateResponse> CreateAsync(DepartmentCreateRequest department);
-    public Task<DepartmentCreateResponse> UpdateAsync(DepartmentCreateRequest department, int id); //todo dto name change
+    Task<DepartmentCreateResponse> CreateAsync(DepartmentCreateRequest department);
+    Task<DepartmentCreateResponse> UpdateAsync(DepartmentCreateRequest department, int id); //todo dto name change
 }

@@ -1,4 +1,7 @@
-﻿using Application.Abstractions.RepositoryInterfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Application.Abstractions.RepositoryInterfaces;
 using Application.Dto.DepartmentDto;
 using Application.Dto.EmployeeDto;
 using Application.Dto.PassportDto;

@@ -1,4 +1,5 @@
-﻿using Application.Dto.EmployeeDto;
+﻿using System.Threading.Tasks;
+using Application.Dto.EmployeeDto;
 using Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,8 +15,7 @@ public class EmployeeController(IEmployeeService service) : Controller
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var res = await service.CreateAsync(employee);
-        return Ok(res);
+        return Ok(await service.CreateAsync(employee));
     }
 
     [HttpPatch("{employeeId}")]
@@ -23,8 +23,8 @@ public class EmployeeController(IEmployeeService service) : Controller
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-        var res = await service.UpdateAsync(employee, employeeId);
-        return Ok(res);
+        
+        return Ok(await service.UpdateAsync(employee, employeeId));
     }
 
     [HttpGet("{companyId}")]
