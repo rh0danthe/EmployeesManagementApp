@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Application.Dto.Employee;
+﻿using Application.Dto.Employee;
 using Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,11 +32,11 @@ public class EmployeeController(IEmployeeService service) : Controller
         return Ok(await service.GetByCompanyAsync(companyId));
     }
     
-    /*[HttpGet("{companyId}")]
-    public async Task<IActionResult> GetByDepartmentAsync([FromRoute] int id)
+    [HttpGet]
+    public async Task<IActionResult> GetByDepartmentAsync([FromQuery] int companyId, [FromQuery] string name)
     {
-        return Ok(await service.GetByCompanyAsync(id));
-    }*/
+        return Ok(await service.GetByDepartmentAsync(companyId, name));
+    }
 
     [HttpDelete("{employeeId}")]
     public async Task<IActionResult> Delete([FromRoute] int employeeId)

@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
-using Application.Abstractions.Factory;
+﻿using Application.Abstractions.Factory;
 using Application.Abstractions.Repository;
 using Dapper;
 using Domain.Entities;
-using Domain.Entities.Update;
+using Infrastructure.Repository.Scripts;
 
 namespace Infrastructure.Repository;
 
@@ -20,45 +19,26 @@ public class DepartmentRepository : IDepartmentRepository
     {
         using var connection = await _factory.CreateAsync();
         
-        var query = "INSERT INTO \"Departments\" (\"Name\", \"Phone\", \"CompanyId\") VALUES(@Name, @Phone, @CompanyId) RETURNING *";
-        
-        return await connection.QueryFirstOrDefaultAsync<Department>(query, department);
+        return await connection.QueryFirstOrDefaultAsync<Department>(Resourses.CreateDepartment, department);
     }
 
     public async Task<Department> GetByIdAsync(int id)
     {
         using var connection = await _factory.CreateAsync();
         
-        var query = "SELECT * FROM \"Departments\" WHERE \"Id\" = @Id";
-        
-        return await connection.QueryFirstOrDefaultAsync<Department>(query, new {Id = id});
+        return await connection.QueryFirstOrDefaultAsync<Department>(Resourses.GetDepartmentById, new {Id = id});
     }
 
     public async Task<Department> GetByNameAsync(string name, int companyId)
     {
         using var connection = await _factory.CreateAsync();
         
-        var query = "SELECT * FROM \"Departments\" WHERE \"Name\" = @Name AND \"CompanyId\" = @CompanyId";
-        
-        return await connection.QueryFirstOrDefaultAsync<Department>(query, new {Name = name, CompanyId = companyId});
-    }
-
-    public async Task<Department> ReturnsIfExistsAsync(Department department)
-    {
-        using var connection = await _factory.CreateAsync();
-        
-        var query = "SELECT * FROM \"Departments\" WHERE \"CompanyId\" = @CompanyId AND \"Name\" = @Name AND \"Phone\" = @Phone";
-        
-        return await connection.QueryFirstOrDefaultAsync<Department>(query, department);
+        return await connection.QueryFirstOrDefaultAsync<Department>(Resourses.GetDepartmentByName, new {Name = name, CompanyId = companyId});
     }
 
     public async Task<Department> UpdateAsync(Department department, int id)
     {
         using var connection = await _factory.CreateAsync();
-        
-        var query =
-            "UPDATE \"Departments\" SET \"Name\" = @Name, " +
-            "\"Phone\" = @Phone, \"CompanyId\" = @CompanyId WHERE \"Id\" = @id RETURNING *";
         
         var parameters = new
         {
@@ -68,6 +48,6 @@ public class DepartmentRepository : IDepartmentRepository
             CompanyId = department.CompanyId
         };
         
-        return await connection.QueryFirstOrDefaultAsync<Department>(query, parameters);
+        return await connection.QueryFirstOrDefaultAsync<Department>(Resourses.UpdateDepartment, parameters);
     }
 }

@@ -1,0 +1,1 @@
+INSERT INTO "Employees" ("Name", "Surname", "Phone", "CompanyId","DepartmentId") VALUES(@Name, @Surname, @Phone,@CompanyId, @DepartmentId) RETURNING *;

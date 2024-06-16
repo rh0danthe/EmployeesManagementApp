@@ -4,6 +4,7 @@ using Application.Abstractions.Repository;
 using Dapper;
 using Domain.Entities;
 using Domain.Entities.Update;
+using Infrastructure.Repository.Scripts;
 
 namespace Infrastructure.Repository;
 
@@ -20,26 +21,19 @@ public class PassportRepository : IPassportRepository
     {
         using var connection = await _factory.CreateAsync();
         
-        var query = "INSERT INTO \"Passports\" (\"Type\", \"Number\", \"EmployeeId\") VALUES(@Type, @Number, @EmployeeId) RETURNING *";
-        
-        return await connection.QueryFirstOrDefaultAsync<Passport>(query, passport);
+        return await connection.QueryFirstOrDefaultAsync<Passport>(Resourses.CreatePassport, passport);
     }
 
     public async Task<Passport> GetByEmployeeIdAsync(int id)
     {
         using var connection = await _factory.CreateAsync();
         
-        string query = "SELECT * FROM \"Passports\" WHERE \"EmployeeId\" = @Id";
-        
-        return await connection.QueryFirstOrDefaultAsync<Passport>(query, new {Id = id});
+        return await connection.QueryFirstOrDefaultAsync<Passport>(Resourses.GetPassportByEmployeesId, new {Id = id});
     }
 
     public async Task<Passport> UpdateAsync(PassportUpdate passport, int id)
     {
         using var connection = await _factory.CreateAsync();
-        
-        var query =
-            "UPDATE \"Passports\" SET \"Type\" = COALESCE(@Type, \"Type\"), \"Number\" = COALESCE(@Number, \"Number\") WHERE \"Id\" = @Id RETURNING *";
         
         var parameters = new
         {
@@ -48,17 +42,13 @@ public class PassportRepository : IPassportRepository
             Number = passport.Number
         };
         
-        return await connection.QueryFirstOrDefaultAsync<Passport>(query, parameters);
+        return await connection.QueryFirstOrDefaultAsync<Passport>(Resourses.UpdatePassport, parameters);
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> CheckIfExistsByNumber(string number)
     {
         using var connection = await _factory.CreateAsync();
-        
-        var query = "DELETE FROM \"Passports\" WHERE \"Id\" = @Id";
-        
-        var res = await connection.ExecuteAsync(query, new { Id = id });
-        
-        return res > 0;
+        var res = await connection.QueryFirstOrDefaultAsync<Passport>(Resourses.CheckPassportIfExistByNumber, new { Number = number });
+        return res is not null;
     }
 }

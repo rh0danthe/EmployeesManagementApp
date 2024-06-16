@@ -5,6 +5,7 @@ using Application.Abstractions.Repository;
 using Dapper;
 using Domain.Entities;
 using Domain.Entities.Update;
+using Infrastructure.Repository.Scripts;
 
 namespace Infrastructure.Repository;
 
@@ -21,20 +22,14 @@ public class EmployeeRepository : IEmployeeRepository
     {
         using var connection = await _factory.CreateAsync();
         
-        var query = "INSERT INTO \"Employees\" (\"Name\", \"Surname\", \"Phone\", " +
-                    "\"CompanyId\", \"DepartmentId\") VALUES(@Name, @Surname, @Phone, " +
-                    "@CompanyId, @DepartmentId) RETURNING *";
-        
-        return await connection.QueryFirstOrDefaultAsync<Employee>(query, employee);
+        return await connection.QueryFirstOrDefaultAsync<Employee>(Resourses.CreateEmployee, employee);
     }
 
     public async Task<bool> DeleteAsync(int employeeId)
     {
         using var connection = await _factory.CreateAsync();
         
-        var query = "DELETE FROM \"Employees\" WHERE \"Id\" = @id";
-        
-        var res = await connection.ExecuteAsync(query, new { id = employeeId });
+        var res = await connection.ExecuteAsync(Resourses.DeleteEmployee, new { id = employeeId });
         
         return res > 0;
     }
@@ -43,18 +38,14 @@ public class EmployeeRepository : IEmployeeRepository
     {
         using var connection = await _factory.CreateAsync();
         
-        var query = "SELECT * FROM \"Employees\" WHERE \"Id\" = @Id";
-        
-        return await connection.QueryFirstOrDefaultAsync<Employee>(query, new {Id = id});
+        return await connection.QueryFirstOrDefaultAsync<Employee>(Resourses.GetEmployeeById, new {Id = id});
     }
     
     public async Task<ICollection<Employee>> GetAllByCompanyAsync(int companyId)
     {
         using var connection = await _factory.CreateAsync();
         
-        var query = "SELECT * FROM \"Employees\" WHERE \"CompanyId\" = @id";
-        
-        var employees = await connection.QueryAsync<Employee>(query, new { id = companyId });
+        var employees = await connection.QueryAsync<Employee>(Resourses.GetAllEmployeesByCompanyId, new { id = companyId });
         
         return employees.ToList();
     }
@@ -63,9 +54,7 @@ public class EmployeeRepository : IEmployeeRepository
     {
         using var connection = await _factory.CreateAsync();
         
-        var query = "SELECT * FROM \"Employees\" WHERE \"Id\" = @id";
-        
-        var employees = await connection.QueryAsync<Employee>(query, new { id = departmentId });
+        var employees = await connection.QueryAsync<Employee>(Resourses.GetAllEmployeesByDepartment, new { id = departmentId });
         
         return employees.ToList();
     }
@@ -73,12 +62,6 @@ public class EmployeeRepository : IEmployeeRepository
     public async Task<Employee> UpdateAsync(EmployeeUpdate employee, int employeeId)
     {
         using var connection = await _factory.CreateAsync();
-        
-        var query =
-            "UPDATE \"Employees\" SET \"Name\" = COALESCE(@Name, \"Name\"), \"Surname\" = COALESCE(@Surname, \"Surname\"), " +
-            "\"Phone\" = COALESCE(@Phone, \"Phone\"),\"CompanyId\" = COALESCE(@CompanyId, \"CompanyId\")," +
-            " \"DepartmentId\" = COALESCE(@DepartmentId, \"DepartmentId\")" +
-            " WHERE \"Id\" = @id RETURNING *";
         
         var parameters = new
         {
@@ -90,6 +73,6 @@ public class EmployeeRepository : IEmployeeRepository
             DepartmentId = employee.DepartmentId
         };
         
-        return await connection.QueryFirstOrDefaultAsync<Employee>(query, parameters);
+        return await connection.QueryFirstOrDefaultAsync<Employee>(Resourses.UpdateEmployee, parameters);
     }
 }

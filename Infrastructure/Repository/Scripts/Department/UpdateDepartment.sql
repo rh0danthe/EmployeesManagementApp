@@ -1,0 +1,1 @@
+UPDATE "Departments" SET "Name" = @Name, "Phone" = @Phone, "CompanyId" = @CompanyId WHERE "Id" = @id RETURNING *;

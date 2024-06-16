@@ -1,0 +1,1 @@
+SELECT * FROM "Departments" WHERE LOWER("Name") = LOWER(@Name) AND "CompanyId" = @CompanyId;

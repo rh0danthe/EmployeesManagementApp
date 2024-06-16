@@ -23,6 +23,18 @@
     <ItemGroup>
       <None Remove="Migrations\Scripts\001_initial.sql" />
       <EmbeddedResource Include="Migrations\Scripts\001_initial.sql" />
+      <EmbeddedResource Update="Repository\Scripts\Resourses.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Resourses.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Repository\Scripts\Resourses.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Resourses.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

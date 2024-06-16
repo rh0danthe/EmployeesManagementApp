@@ -1,0 +1,1 @@
+INSERT INTO "Passports" ("Type", "Number", "EmployeeId") VALUES(@Type, @Number, @EmployeeId) RETURNING *;

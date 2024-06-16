@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS "Employees" (
 CREATE TABLE IF NOT EXISTS "Passports"(
     "Id" serial PRIMARY KEY,
     "Type" text NOT NULL,
-    "Number" text NOT NULL,
+    "Number" text NOT NULL UNIQUE,
     "EmployeeId" int REFERENCES "Employees"("Id") ON DELETE CASCADE 
 );
 

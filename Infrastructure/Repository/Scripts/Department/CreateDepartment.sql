@@ -1,0 +1,1 @@
+INSERT INTO "Departments" ("Name", "Phone", "CompanyId") VALUES(@Name, @Phone, @CompanyId) RETURNING *;
