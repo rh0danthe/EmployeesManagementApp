@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Application.Dto.EmployeeDto;
+using Application.Dto.Employee;
 using Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

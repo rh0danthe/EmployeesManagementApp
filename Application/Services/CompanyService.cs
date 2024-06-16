@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
-using Application.Abstractions.RepositoryInterfaces;
-using Application.Dto.CompanyDto;
+using Application.Abstractions.Repository;
+using Application.Dto.Company;
 using Application.Services.Interfaces;
 using Domain.Entities;
+using Domain.Exceptions.Company;
 
 namespace Application.Services;
 
@@ -17,16 +18,8 @@ public class CompanyService : ICompanyService
     
     public async Task<CompanyResponse> CreateAsync(CompanyRequest company)
     {
-        var dbCompany = new Company() { Name = company.Name };
-        return MapToResponse(await _repository.CreateAsync(dbCompany));
-    }
-    
-    private CompanyResponse MapToResponse(Company company)
-    {
-        return new CompanyResponse()
-        {
-            Id = company.Id,
-            Name = company.Name
-        };
+        var dbCompany = await _repository.CreateAsync(new Company() { Name = company.Name });
+        if (dbCompany is null) throw new CompanyBadRequest("Error while creating the company");
+        return CompanyMapper.MapToResponse(dbCompany);
     }
 }

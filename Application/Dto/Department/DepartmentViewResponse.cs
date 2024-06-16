@@ -1,4 +1,4 @@
-﻿namespace Application.Dto.DepartmentDto;
+﻿namespace Application.Dto.Department;
 
 public class DepartmentViewResponse
 {

@@ -1,7 +1,7 @@
 using Application.Extensions;
 using Infrastructure.Extensions;
-using Infrastructure.Migrations.Extensions;
-using Microsoft.OpenApi.Models;
+using Infrastructure.Migrations;
+using Presentation.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,15 +12,14 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddRepositoryDependencies();
 builder.Services.AddServiceDependencies();
+
+builder.Services.AddScoped<ExceptionHandlingMiddleware>();
     
 var app = builder.Build();
 
 app.Migrate<Program>();
 
-/*if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-}*/
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI();

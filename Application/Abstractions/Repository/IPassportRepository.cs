@@ -1,12 +1,12 @@
-﻿using System.Threading.Tasks;
-using Domain.Entities;
+﻿using Domain.Entities;
+using Domain.Entities.Update;
 
-namespace Application.Abstractions.RepositoryInterfaces;
+namespace Application.Abstractions.Repository;
 
 public interface IPassportRepository
 {
     Task<Passport> CreateAsync(Passport passport);
-    Task<Passport> GetByIdAsync(int id);
-    Task<Passport> UpdateAsync(Passport passport, int id);
+    Task<Passport> GetByEmployeeIdAsync(int id);
+    Task<Passport> UpdateAsync(PassportUpdate passport, int id);
     Task<bool> DeleteAsync(int id);
 }

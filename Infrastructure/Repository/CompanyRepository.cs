@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Application.Abstractions.FactoryInterfaces;
-using Application.Abstractions.RepositoryInterfaces;
+using Application.Abstractions.Factory;
+using Application.Abstractions.Repository;
 using Dapper;
 using Domain.Entities;
 

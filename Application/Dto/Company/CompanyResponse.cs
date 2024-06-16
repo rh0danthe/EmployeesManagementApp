@@ -1,4 +1,4 @@
-﻿namespace Application.Dto.CompanyDto;
+﻿namespace Application.Dto.Company;
 
 public class CompanyResponse
 {

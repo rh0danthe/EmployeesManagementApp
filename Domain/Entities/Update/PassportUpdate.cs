@@ -1,6 +1,6 @@
-﻿namespace Application.Dto.Passport;
+﻿namespace Domain.Entities.Update;
 
-public class PassportUpdateRequest
+public class PassportUpdate
 {
     public string? Type { get; set; }
     public string? Number { get; set; }

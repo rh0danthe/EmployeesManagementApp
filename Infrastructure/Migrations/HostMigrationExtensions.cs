@@ -1,12 +1,11 @@
 ﻿using System.Reflection;
 using DbUp;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.Migrations.Extensions;
+namespace Infrastructure.Migrations;
 
 public static class HostMigrationExtensions
 {

@@ -1,4 +1,4 @@
-﻿namespace Application.Dto.PassportDto;
+﻿namespace Application.Dto.Passport;
 
 public class PassportRequest
 {

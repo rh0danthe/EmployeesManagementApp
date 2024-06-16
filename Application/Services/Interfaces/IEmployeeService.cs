@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Application.Dto.EmployeeDto;
+using Application.Dto.Employee;
 
 namespace Application.Services.Interfaces;
 

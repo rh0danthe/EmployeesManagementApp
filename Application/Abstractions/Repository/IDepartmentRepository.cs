@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using Domain.Entities;
+﻿using Domain.Entities;
+using Domain.Entities.Update;
 
-namespace Application.Abstractions.RepositoryInterfaces;
+namespace Application.Abstractions.Repository;
 
 public interface IDepartmentRepository
 {

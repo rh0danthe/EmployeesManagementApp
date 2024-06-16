@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
-using Application.Abstractions.FactoryInterfaces;
-using Application.Abstractions.RepositoryInterfaces;
+using Application.Abstractions.Factory;
+using Application.Abstractions.Repository;
 using Dapper;
 using Domain.Entities;
+using Domain.Entities.Update;
 
 namespace Infrastructure.Repository;
 
@@ -56,7 +57,8 @@ public class DepartmentRepository : IDepartmentRepository
         using var connection = await _factory.CreateAsync();
         
         var query =
-            "UPDATE \"Departments\" SET \"Name\" = @Name, \"Phone\" = @Phone, \"CompanyId\" = @CompanyId WHERE \"Id\" = @id RETURNING *";
+            "UPDATE \"Departments\" SET \"Name\" = @Name, " +
+            "\"Phone\" = @Phone, \"CompanyId\" = @CompanyId WHERE \"Id\" = @id RETURNING *";
         
         var parameters = new
         {

@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace Application.Abstractions.FactoryInterfaces;
+namespace Application.Abstractions.Factory;
 
 public interface IDbConnectionFactory
 {

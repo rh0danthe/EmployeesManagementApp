@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Application.Abstractions.FactoryInterfaces;
-using Application.Abstractions.RepositoryInterfaces;
+using Application.Abstractions.Factory;
+using Application.Abstractions.Repository;
 using Dapper;
 using Domain.Entities;
+using Domain.Entities.Update;
 
 namespace Infrastructure.Repository;
 
@@ -21,8 +22,8 @@ public class EmployeeRepository : IEmployeeRepository
         using var connection = await _factory.CreateAsync();
         
         var query = "INSERT INTO \"Employees\" (\"Name\", \"Surname\", \"Phone\", " +
-                    "\"CompanyId\", \"DepartmentId\", \"PassportId\") VALUES(@Name, @Surname, @Phone, " +
-                    "@CompanyId, @DepartmentId, @PassportId) RETURNING *";
+                    "\"CompanyId\", \"DepartmentId\") VALUES(@Name, @Surname, @Phone, " +
+                    "@CompanyId, @DepartmentId) RETURNING *";
         
         return await connection.QueryFirstOrDefaultAsync<Employee>(query, employee);
     }
@@ -69,13 +70,14 @@ public class EmployeeRepository : IEmployeeRepository
         return employees.ToList();
     }
 
-    public async Task<Employee> UpdateAsync(Employee employee, int employeeId)
+    public async Task<Employee> UpdateAsync(EmployeeUpdate employee, int employeeId)
     {
         using var connection = await _factory.CreateAsync();
         
         var query =
-            "UPDATE \"Employees\" SET \"Name\" = @Name, \"Surname\" = @Surname, \"Phone\" = @Phone, " +
-            "\"CompanyId\" = @CompanyId, \"DepartmentId\" = @DepartmentId, \"PassportId\" = @PassportId" +
+            "UPDATE \"Employees\" SET \"Name\" = COALESCE(@Name, \"Name\"), \"Surname\" = COALESCE(@Surname, \"Surname\"), " +
+            "\"Phone\" = COALESCE(@Phone, \"Phone\"),\"CompanyId\" = COALESCE(@CompanyId, \"CompanyId\")," +
+            " \"DepartmentId\" = COALESCE(@DepartmentId, \"DepartmentId\")" +
             " WHERE \"Id\" = @id RETURNING *";
         
         var parameters = new
@@ -85,8 +87,7 @@ public class EmployeeRepository : IEmployeeRepository
             Surname = employee.Surname,
             Phone = employee.Phone,
             CompanyId = employee.CompanyId,
-            DepartmentId = employee.DepartmentId,
-            PassportId = employee.PassportId
+            DepartmentId = employee.DepartmentId
         };
         
         return await connection.QueryFirstOrDefaultAsync<Employee>(query, parameters);

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Application.Dto.CompanyDto;
+using Application.Dto.Company;
 
 namespace Application.Services.Interfaces;
 

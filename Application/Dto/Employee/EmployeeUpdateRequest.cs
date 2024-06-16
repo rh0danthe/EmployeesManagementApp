@@ -1,7 +1,7 @@
-﻿using Application.Dto.DepartmentDto;
-using Application.Dto.PassportDto;
+﻿using Application.Dto.Department;
+using Application.Dto.Passport;
 
-namespace Application.Dto.EmployeeDto;
+namespace Application.Dto.Employee;
 
 public class EmployeeUpdateRequest
 {

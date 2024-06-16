@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Domain.Entities;
+﻿using Domain.Entities;
+using Domain.Entities.Update;
 
-namespace Application.Abstractions.RepositoryInterfaces;
+namespace Application.Abstractions.Repository;
 
 public interface IEmployeeRepository
 {
@@ -11,5 +10,5 @@ public interface IEmployeeRepository
     Task<Employee> GetByIdAsync(int id);
     Task<ICollection<Employee>> GetAllByCompanyAsync(int companyId);
     Task<ICollection<Employee>> GetAllByDepartmentAsync(int departmentId);
-    Task<Employee> UpdateAsync(Employee employee, int employeeId);
+    Task<Employee> UpdateAsync(EmployeeUpdate employee, int employeeId);
 }

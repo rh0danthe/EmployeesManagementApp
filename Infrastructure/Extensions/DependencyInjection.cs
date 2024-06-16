@@ -1,5 +1,5 @@
-﻿using Application.Abstractions.FactoryInterfaces;
-using Application.Abstractions.RepositoryInterfaces;
+﻿using Application.Abstractions.Factory;
+using Application.Abstractions.Repository;
 using Infrastructure.Factories;
 using Infrastructure.Repository;
 using Microsoft.Extensions.DependencyInjection;

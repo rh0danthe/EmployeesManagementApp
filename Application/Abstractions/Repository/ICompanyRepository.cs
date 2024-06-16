@@ -1,7 +1,6 @@
-﻿using System.Threading.Tasks;
-using Domain.Entities;
+﻿using Domain.Entities;
 
-namespace Application.Abstractions.RepositoryInterfaces;
+namespace Application.Abstractions.Repository;
 
 public interface ICompanyRepository
 {
