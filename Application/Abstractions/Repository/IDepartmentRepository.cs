@@ -9,4 +9,7 @@ public interface IDepartmentRepository
     Task<Department> GetByIdAsync(int id);
     Task<Department> GetByNameAsync(string name, int companyId);
     Task<Department> UpdateAsync(Department department, int id);
+    Task<ICollection<Department>> GetAllByCompanyAsync(int companyId);
+    Task<ICollection<Department>> GetAllAsync();
+    Task<bool> DeleteAsync(int id);
 }

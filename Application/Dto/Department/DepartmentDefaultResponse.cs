@@ -1,6 +1,6 @@
 ﻿namespace Application.Dto.Department;
 
-public class DepartmentCreateResponse
+public class DepartmentDefaultResponse
 {
     public int Id { get; set; }
     public string Name { get; set; }

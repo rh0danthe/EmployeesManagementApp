@@ -1,6 +1,6 @@
 ﻿namespace Application.Dto.Department;
 
-public class DepartmentCreateRequest
+public class DepartmentDefaultRequest
 {
     public string Name { get; set; }
     public string Phone { get; set; }

@@ -1,0 +1,1 @@
+DELETE FROM "Departments" WHERE "Id" = @id;

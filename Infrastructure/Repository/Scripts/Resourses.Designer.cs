@@ -106,11 +106,56 @@ namespace Infrastructure.Repository.Scripts {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на DELETE FROM &quot;Companies&quot; WHERE &quot;Id&quot; = @id;.
+        /// </summary>
+        internal static string DeleteCompany {
+            get {
+                return ResourceManager.GetString("DeleteCompany", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на DELETE FROM &quot;Departments&quot; WHERE &quot;Id&quot; = @id;.
+        /// </summary>
+        internal static string DeleteDepartment {
+            get {
+                return ResourceManager.GetString("DeleteDepartment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на DELETE FROM &quot;Employees&quot; WHERE &quot;Id&quot; = @id;.
         /// </summary>
         internal static string DeleteEmployee {
             get {
                 return ResourceManager.GetString("DeleteEmployee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на SELECT * FROM &quot;Companies&quot;;.
+        /// </summary>
+        internal static string GetAllCompanies {
+            get {
+                return ResourceManager.GetString("GetAllCompanies", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на SELECT * FROM &quot;Departments&quot;;.
+        /// </summary>
+        internal static string GetAllDepartments {
+            get {
+                return ResourceManager.GetString("GetAllDepartments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на SELECT * FROM &quot;Departments&quot; WHERE &quot;CompanyId&quot; = @CompanyId;.
+        /// </summary>
+        internal static string GetAllDepartmentsByCompanyId {
+            get {
+                return ResourceManager.GetString("GetAllDepartmentsByCompanyId", resourceCulture);
             }
         }
         
@@ -174,6 +219,15 @@ namespace Infrastructure.Repository.Scripts {
         internal static string GetPassportByEmployeesId {
             get {
                 return ResourceManager.GetString("GetPassportByEmployeesId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на UPDATE &quot;Companies&quot; SET &quot;Name&quot; = @Name WHERE &quot;Id&quot; = @id RETURNING *;.
+        /// </summary>
+        internal static string UpdateCompany {
+            get {
+                return ResourceManager.GetString("UpdateCompany", resourceCulture);
             }
         }
         

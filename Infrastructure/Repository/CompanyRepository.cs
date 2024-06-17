@@ -29,4 +29,25 @@ public class CompanyRepository : ICompanyRepository
         
         return await connection.QueryFirstOrDefaultAsync<Company>(Resourses.GetCompanyById, new {Id = id});
     }
+
+    public async Task<Company> UpdateAsync(Company company, int companyId)
+    {
+        using var connection = await _factory.CreateAsync();
+        return await connection.QueryFirstOrDefaultAsync<Company>(Resourses.UpdateCompany, new {Name = company.Name, id = companyId});
+    }
+
+    public async Task<ICollection<Company>> GetAllAsync()
+    {
+        using var connection = await _factory.CreateAsync();
+        return (await connection.QueryAsync<Company>(Resourses.GetAllCompanies)).ToList();
+    }
+
+    public async Task<bool> DeleteAsync(int companyId)
+    {
+        using var connection = await _factory.CreateAsync();
+        
+        var res = await connection.ExecuteAsync(Resourses.DeleteCompany, new { id = companyId });
+        
+        return res > 0;
+    }
 }

@@ -1,0 +1,1 @@
+DELETE FROM "Companies" WHERE "Id" = @id;

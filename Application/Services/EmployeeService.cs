@@ -26,177 +26,172 @@ public class EmployeeService : IEmployeeService
         _companyRepository = companyRepository;
     }
     
-    public async Task<EmployeeCreateResponse> CreateAsync(EmployeeCreateRequest employee)
+    public async Task<EmployeeCreateResponse> CreateAsync(EmployeeCreateRequest employee, string departmentName)
+{
+    var dbCompany = await _companyRepository.GetByIdAsync(employee.CompanyId);
+
+    if (dbCompany is null)
+        throw new CompanyNotFound($"Company with id {employee.CompanyId} does not exist");
+    
+    var dbDepartment = await _departmentRepository.GetByNameAsync(StringCleaner.CleanInput(departmentName), employee.CompanyId);
+
+    if (dbDepartment is null) throw new DepartmentNotFound($"Validating input data error: Department '{StringCleaner.CleanInput(departmentName)}' " +
+                                                           $"does not exist in company with id {employee.CompanyId}");
+    if (await _passportRepository.CheckIfExistsByNumber(StringCleaner.CleanInput(employee.Passport.Number)))
+        throw new PassportBadRequest(
+            $"Passport with number {StringCleaner.CleanInput(employee.Passport.Number)} already exists");
+    
+    var createEmployee = new Employee()
     {
-        var dbCompany = await _companyRepository.GetByIdAsync(employee.CompanyId);
+        Name = StringCleaner.CleanInput(employee.Name),
+        Surname = StringCleaner.CleanInput(employee.Surname),
+        Phone = StringCleaner.CleanInput(employee.Phone),
+        CompanyId = employee.CompanyId,
+        DepartmentId = dbDepartment.Id
+    };
 
-        if (dbCompany is null)
-            throw new CompanyNotFound($"Company with id {employee.CompanyId} does not exist");
-        
-        var dbDepartment = await _departmentRepository.GetByNameAsync(StringCleaner.CleanInput(employee.Department.Name), employee.CompanyId);
+    var dbEmployee = await _employeeRepository.CreateAsync(createEmployee);
+    
+    if (dbEmployee is null) throw new EmployeeBadRequest("Error while creating the employee");
+    
+    var passport = new Passport()
+    {
+        Number = StringCleaner.CleanInput(employee.Passport.Number),
+        Type = StringCleaner.CleanInput(employee.Passport.Type),
+        EmployeeId = dbEmployee.Id
+    };
+    
+    var dbPassport = await _passportRepository.CreateAsync(passport);
 
-        if (dbDepartment is null) throw new DepartmentNotFound($"Validating input data error: Department '{StringCleaner.CleanInput(employee.Department.Name)}' " +
-                                                               $"does not exist in company with id {employee.CompanyId}");
+    if (dbPassport is null) throw new PassportBadRequest($"Error while creating passport for employee with id {dbEmployee.Id}");
+    
+    var response = new EmployeeCreateResponse() { Id = dbEmployee.Id };
+    
+    return response;
+}
+
+public async Task<EmployeeViewResponse> UpdateAsync(EmployeeUpdateRequest employee, int id, string departmentName)
+{
+    var dbEmployee = await _employeeRepository.GetByIdAsync(id);
+    
+    if (dbEmployee is null) throw new EmployeeNotFound($"Validating input data error: Employee with id {id} does not exist");
+    
+    var dbCompany = await _companyRepository.GetByIdAsync(employee.CompanyId ?? dbEmployee.CompanyId);
+
+    if (dbCompany is null)
+        throw new CompanyNotFound($"Company with id {employee.CompanyId ?? dbEmployee.CompanyId} does not exist");
+    
+    var dbPassport = await _passportRepository.GetByEmployeeIdAsync(id);
+    
+    if (dbPassport is null) throw new PassportNotFound($"Validating input data error: Passport for employee with id {id} is not found");
+    
+    if (employee.Passport is not null && employee.Passport.Number != dbPassport.Number)
+    {
         if (await _passportRepository.CheckIfExistsByNumber(StringCleaner.CleanInput(employee.Passport.Number)))
             throw new PassportBadRequest(
                 $"Passport with number {StringCleaner.CleanInput(employee.Passport.Number)} already exists");
-        
-        var createEmployee = new Employee()
-        {
-            Name = StringCleaner.CleanInput(employee.Name),
-            Surname = StringCleaner.CleanInput(employee.Surname),
-            Phone = StringCleaner.CleanInput(employee.Phone),
-            CompanyId = employee.CompanyId,
-            DepartmentId = dbDepartment.Id
-        };
+    }
+    
+    var dbDepartment = await _departmentRepository.GetByIdAsync(dbEmployee.DepartmentId);
+    
+    if (dbDepartment is null) throw new DepartmentNotFound($"Validating input data error: Department with id {dbEmployee.DepartmentId} in" +
+                                                           $" company with id {dbEmployee.CompanyId} for employee with id {id} does not exist");
 
-        var dbEmployee = await _employeeRepository.CreateAsync(createEmployee);
-        
-        if (dbEmployee is null) throw new EmployeeBadRequest("Error while creating the employee");
-        
-        var passport = new Passport()
+
+    var department = await this._departmentRepository.GetByNameAsync(departmentName, employee.CompanyId ?? dbEmployee.CompanyId);
+
+    if (department is null)
+    {
+        throw new DepartmentNotFound($"Department with name '{departmentName}' has not been found");
+    }
+    
+    var updatedEmployee = await _employeeRepository.UpdateAsync(new EmployeeUpdate()
+    {
+        Name = StringCleaner.CleanInput(employee.Name),
+        Surname = StringCleaner.CleanInput(employee.Surname),
+        Phone = StringCleaner.CleanInput(employee.Phone),
+        CompanyId = employee.CompanyId,
+        DepartmentId = department.Id
+    }, id);
+    
+    if (updatedEmployee is null) throw new EmployeeBadRequest("Error while updating the employee");
+    
+    Passport updatedPassport;
+    if (employee.Passport is not null)
+    {
+        updatedPassport = await _passportRepository.UpdateAsync(new PassportUpdate
         {
             Number = StringCleaner.CleanInput(employee.Passport.Number),
-            Type = StringCleaner.CleanInput(employee.Passport.Type),
-            EmployeeId = dbEmployee.Id
-        };
-        
-        var dbPassport = await _passportRepository.CreateAsync(passport);
+            Type = StringCleaner.CleanInput(employee.Passport.Type)
+        }, dbPassport.Id);
 
-        if (dbPassport is null) throw new PassportBadRequest($"Error while creating passport for employee with id {dbEmployee.Id}");
-        
-        var response = new EmployeeCreateResponse() { Id = dbEmployee.Id };
-        return response;
+        if (updatedPassport is null)
+            throw new PassportBadRequest(
+                $"Error while updating passport for employee with id {updatedEmployee.Id}");
     }
+    else updatedPassport = dbPassport;
 
-    public async Task<EmployeeViewResponse> UpdateAsync(EmployeeUpdateRequest employee, int id)
+    return EmployeeMapper.MapToViewResponse(updatedEmployee, department, updatedPassport);
+}
+
+public async Task<ICollection<EmployeeViewResponse>> GetAllByCompanyAsync(int companyId)
+{
+    var dbCompany = await _companyRepository.GetByIdAsync(companyId);
+
+    if (dbCompany is null)
+        throw new CompanyNotFound($"Company with id {companyId} does not exist");
+    
+    var employees = await _employeeRepository.GetAllByCompanyAsync(companyId);
+    
+    var result = new List<EmployeeViewResponse>();
+    
+    foreach (var employee in employees)
     {
-        var dbEmployee = await _employeeRepository.GetByIdAsync(id);
-        
-        if (dbEmployee is null) throw new EmployeeNotFound($"Validating input data error: Employee with id {id} does not exist");
-        
-        var dbCompany = await _companyRepository.GetByIdAsync(employee.CompanyId ?? dbEmployee.CompanyId);
+        var department = await _departmentRepository.GetByIdAsync(employee.DepartmentId);
 
-        if (dbCompany is null)
-            throw new CompanyNotFound($"Company with id {employee.CompanyId ?? dbEmployee.CompanyId} does not exist");
+        if (department is null) throw new DepartmentNotFound($"Department for employee with id {employee.Id} does not exist");
         
-        var dbPassport = await _passportRepository.GetByEmployeeIdAsync(id);
+        var passport = await _passportRepository.GetByEmployeeIdAsync(employee.Id);
         
-        if (dbPassport is null) throw new PassportNotFound($"Validating input data error: Passport for employee with id {id} is not found");
-        
-        if (employee.Passport is not null && employee.Passport.Number != dbPassport.Number)
-        {
-            if (await _passportRepository.CheckIfExistsByNumber(StringCleaner.CleanInput(employee.Passport.Number)))
-                throw new PassportBadRequest(
-                    $"Passport with number {StringCleaner.CleanInput(employee.Passport.Number)} already exists");
-        }
-        
-        var dbDepartment = await _departmentRepository.GetByIdAsync(dbEmployee.DepartmentId);
-        
-        if (dbDepartment is null) throw new DepartmentNotFound($"Validating input data error: Department with id {dbEmployee.DepartmentId} in" +
-                                                               $" company with id {dbEmployee.CompanyId} for employee with id {id} does not exist");
-        
-        Department updatedDepartment;
-        
-        if (employee.Department is not null)
-        {
-            var name = StringCleaner.CleanInput(employee.Department.Name) ?? dbDepartment.Name;
-            var companyId = employee.CompanyId ?? dbEmployee.CompanyId;
-            updatedDepartment = await _departmentRepository.GetByNameAsync(name, companyId);
-            
-            if (updatedDepartment is null) throw new DepartmentBadRequest($"Validating input data error: " +
-                                                                          $"Department with name {name} " +
-                                                                          $"does not exist in company with id {companyId}");
-        }
-        else updatedDepartment = dbDepartment;
-        
-        var updatedEmployee = await _employeeRepository.UpdateAsync(new EmployeeUpdate()
-        {
-            Name = StringCleaner.CleanInput(employee.Name),
-            Surname = StringCleaner.CleanInput(employee.Surname),
-            Phone = StringCleaner.CleanInput(employee.Phone),
-            CompanyId = employee.CompanyId,
-            DepartmentId = updatedDepartment.Id
-        }, id);
-        
-        if (updatedEmployee is null) throw new EmployeeBadRequest("Error while updating the employee");
-        Passport updatedPassport;
-        if (employee.Passport is not null)
-        {
-            updatedPassport = await _passportRepository.UpdateAsync(new PassportUpdate
-            {
-                Number = StringCleaner.CleanInput(employee.Passport.Number),
-                Type = StringCleaner.CleanInput(employee.Passport.Type)
-            }, dbPassport.Id);
+        if (passport is null) throw new PassportNotFound($"Passport for employee with id {employee.Id} does not exist");
 
-            if (updatedPassport is null)
-                throw new PassportBadRequest(
-                    $"Error while updating passport for employee with id {updatedEmployee.Id}");
-        }
-
-        else updatedPassport = dbPassport;
-
-        return EmployeeMapper.MapToViewResponse(updatedEmployee, updatedDepartment, updatedPassport);
+        var employeeResponse = EmployeeMapper.MapToViewResponse(employee, department, passport);
+        
+        result.Add(employeeResponse);
     }
 
-    public async Task<ICollection<EmployeeViewResponse>> GetByCompanyAsync(int companyId)
+    return result;
+}
+
+
+public async Task<ICollection<EmployeeViewResponse>> GetAllByDepartmentAsync(int companyId, string departmentName)
+{
+    var dbDepartment = await _departmentRepository.GetByNameAsync(StringCleaner.CleanInput(departmentName), companyId);
+    
+    if (dbDepartment is null) throw new DepartmentNotFound($"Department with name {StringCleaner.CleanInput(departmentName)} in " +
+                                                           $"company with id {companyId} does not exist");
+
+    var employees = await _employeeRepository.GetAllByDepartmentAsync(dbDepartment.Id);
+    
+    var result = new List<EmployeeViewResponse>();
+    
+    foreach (var employee in employees)
     {
-        var dbCompany = await _companyRepository.GetByIdAsync(companyId);
-
-        if (dbCompany is null)
-            throw new CompanyNotFound($"Company with id {companyId} does not exist");
+        var department = await _departmentRepository.GetByIdAsync(employee.DepartmentId);
         
-        var employees = await _employeeRepository.GetAllByCompanyAsync(companyId);
+        if (department is null) throw new DepartmentNotFound($"Department for employee with id {employee.Id} does not exist");
         
-        var result = new List<EmployeeViewResponse>();
+        var passport = await _passportRepository.GetByEmployeeIdAsync(employee.Id);
         
-        foreach (var employee in employees)
-        {
-            var department = await _departmentRepository.GetByIdAsync(employee.DepartmentId);
+        if (passport is null) throw new PassportNotFound($"Passport for employee with id {employee.Id} does not exist");
 
-            if (department is null) throw new DepartmentNotFound($"Department for employee with id {employee.Id} does not exist");
-            
-            var passport = await _passportRepository.GetByEmployeeIdAsync(employee.Id);
-            
-            if (passport is null) throw new PassportNotFound($"Passport for employee with id {employee.Id} does not exist");
-
-            var employeeResponse = EmployeeMapper.MapToViewResponse(employee, department, passport);
-            
-            result.Add(employeeResponse);
-        }
-
-        return result;
+        var employeeResponse = EmployeeMapper.MapToViewResponse(employee, department, passport);
+        
+        result.Add(employeeResponse);
     }
 
-
-    public async Task<ICollection<EmployeeViewResponse>> GetByDepartmentAsync(int companyId, string departmentName)
-    {
-        var dbDepartment = await _departmentRepository.GetByNameAsync(StringCleaner.CleanInput(departmentName), companyId);
-        
-        if (dbDepartment is null) throw new DepartmentNotFound($"Department with name {StringCleaner.CleanInput(departmentName)} in " +
-                                                               $"company with id {companyId} does not exist");
-
-        var employees = await _employeeRepository.GetAllByDepartmentAsync(dbDepartment.Id);
-        
-        var result = new List<EmployeeViewResponse>();
-        
-        foreach (var employee in employees)
-        {
-            var department = await _departmentRepository.GetByIdAsync(employee.DepartmentId);
-            
-            if (department is null) throw new DepartmentNotFound($"Department for employee with id {employee.Id} does not exist");
-            
-            var passport = await _passportRepository.GetByEmployeeIdAsync(employee.Id);
-            
-            if (passport is null) throw new PassportNotFound($"Passport for employee with id {employee.Id} does not exist");
-
-            var employeeResponse = EmployeeMapper.MapToViewResponse(employee, department, passport);
-            
-            result.Add(employeeResponse);
-        }
-
-        return result;
-    }
+    return result;
+}
 
     public async Task<bool> DeleteAsync(int id)
     {

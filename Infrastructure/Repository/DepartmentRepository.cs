@@ -50,4 +50,25 @@ public class DepartmentRepository : IDepartmentRepository
         
         return await connection.QueryFirstOrDefaultAsync<Department>(Resourses.UpdateDepartment, parameters);
     }
+
+    public async Task<ICollection<Department>> GetAllByCompanyAsync(int companyId)
+    {
+        using var connection = await _factory.CreateAsync();
+        return (await connection.QueryAsync<Department>(Resourses.GetAllDepartmentsByCompanyId, new {CompanyId = companyId})).ToList();
+    }
+
+    public async Task<ICollection<Department>> GetAllAsync()
+    {
+        using var connection = await _factory.CreateAsync();
+        return (await connection.QueryAsync<Department>(Resourses.GetAllDepartments)).ToList();
+    }
+
+    public async Task<bool> DeleteAsync(int departmentId)
+    {
+        using var connection = await _factory.CreateAsync();
+        
+        var res = await connection.ExecuteAsync(Resourses.DeleteDepartment, new { id = departmentId });
+        
+        return res > 0;
+    }
 }

@@ -2,9 +2,9 @@
 
 public static class DepartmentMapper
 {
-    public static DepartmentCreateResponse MapToCreateResponse(Domain.Entities.Department department)
+    public static DepartmentDefaultResponse MapToDefaultResponse(Domain.Entities.Department department)
     {
-        return new DepartmentCreateResponse()
+        return new DepartmentDefaultResponse()
         {
             Id = department.Id,
             Name = department.Name,

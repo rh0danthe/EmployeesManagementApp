@@ -133,8 +133,23 @@
   <data name="CreatePassport" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Passport\CreatePassport.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
+  <data name="DeleteCompany" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Company\DeleteCompany.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
+  </data>
+  <data name="DeleteDepartment" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Department\DeleteDepartment.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
+  </data>
   <data name="DeleteEmployee" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Employee\DeleteEmployee.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
+  </data>
+  <data name="GetAllCompanies" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Company\GetAllCompanies.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
+  </data>
+  <data name="GetAllDepartments" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Department\GetAllDepartments.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
+  </data>
+  <data name="GetAllDepartmentsByCompanyId" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Department\GetAllDepartmentsByCompanyId.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
   <data name="GetAllEmployeesByCompanyId" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Employee\GetAllEmployeesByCompanyId.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
@@ -156,6 +171,9 @@
   </data>
   <data name="GetPassportByEmployeesId" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Passport\GetPassportByEmployeesId.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
+  </data>
+  <data name="UpdateCompany" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Company\UpdateCompany.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>
   </data>
   <data name="UpdateDepartment" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Department\UpdateDepartment.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1251</value>

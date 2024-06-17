@@ -19,43 +19,71 @@ public class DepartmentService : IDepartmentService
         _companyRepository = companyRepository;
     }
 
-    public async Task<DepartmentCreateResponse> CreateAsync(DepartmentCreateRequest department)
+    public async Task<DepartmentDefaultResponse> CreateAsync(DepartmentDefaultRequest departmentDefault)
     {
-        var dbCompany = await _companyRepository.GetByIdAsync(department.CompanyId);
+        var dbCompany = await _companyRepository.GetByIdAsync(departmentDefault.CompanyId);
 
         if (dbCompany is null)
-            throw new CompanyNotFound($"Company with id {department.CompanyId} does not exist");
+            throw new CompanyNotFound($"Company with id {departmentDefault.CompanyId} does not exist");
         
-        var existingDepartment = await _departmentRepository.GetByNameAsync(StringCleaner.CleanInput(department.Name), department.CompanyId);
+        var existingDepartment = await _departmentRepository.GetByNameAsync(StringCleaner.CleanInput(departmentDefault.Name), departmentDefault.CompanyId);
         
-        if (existingDepartment is not null) throw new DepartmentBadRequest($"Department with name '{StringCleaner.CleanInput(department.Name)}'" +
-                                                                           $"for company with id {department.CompanyId} already exists");
+        if (existingDepartment is not null) throw new DepartmentBadRequest($"Department with name '{StringCleaner.CleanInput(departmentDefault.Name)}'" +
+                                                                           $"for company with id {departmentDefault.CompanyId} already exists");
         var dbDepartment = await _departmentRepository.CreateAsync(new Department()
         {
-            Name = StringCleaner.CleanInput(department.Name),
-            Phone = StringCleaner.CleanInput(department.Phone),
-            CompanyId = department.CompanyId
+            Name = StringCleaner.CleanInput(departmentDefault.Name),
+            Phone = StringCleaner.CleanInput(departmentDefault.Phone),
+            CompanyId = departmentDefault.CompanyId
         });
-        if (dbDepartment is null) throw new DepartmentBadRequest("Error while saving the department");
-        return DepartmentMapper.MapToCreateResponse(dbDepartment);
+        if (dbDepartment is null) throw new DepartmentBadRequest("Error while saving the departmentDefault");
+        return DepartmentMapper.MapToDefaultResponse(dbDepartment);
     }
 
-    public async Task<DepartmentCreateResponse> UpdateAsync(DepartmentCreateRequest department, int id)
+    public async Task<DepartmentDefaultResponse> UpdateAsync(DepartmentDefaultRequest departmentDefault, int id)
     {
-        var dbCompany = await _companyRepository.GetByIdAsync(department.CompanyId);
+        var dbCompany = await _companyRepository.GetByIdAsync(departmentDefault.CompanyId);
 
         if (dbCompany is null)
-            throw new CompanyNotFound($"Company with id {department.CompanyId} does not exist");
+            throw new CompanyNotFound($"Company with id {departmentDefault.CompanyId} does not exist");
         
         var dbDepartment = await _departmentRepository.UpdateAsync(new Department()
         {
-            Name = StringCleaner.CleanInput(department.Name),
-            Phone = StringCleaner.CleanInput(department.Phone),
-            CompanyId = department.CompanyId
+            Name = StringCleaner.CleanInput(departmentDefault.Name),
+            Phone = StringCleaner.CleanInput(departmentDefault.Phone),
+            CompanyId = departmentDefault.CompanyId
         }, id);
         
-        if (dbDepartment is null) throw new DepartmentBadRequest($"Error while updating the department with id {id}");
+        if (dbDepartment is null) throw new DepartmentBadRequest($"Error while updating the departmentDefault with id {id}");
         
-        return DepartmentMapper.MapToCreateResponse(dbDepartment);
+        return DepartmentMapper.MapToDefaultResponse(dbDepartment);
+    }
+
+    public async Task<ICollection<DepartmentDefaultResponse>> GetAllByCompanyAsync(int companyId)
+    {
+        var dbCompany = await _companyRepository.GetByIdAsync(companyId);
+
+        if (dbCompany is null)
+            throw new CompanyNotFound($"Company with id {companyId} does not exist");
+        
+        var res = await _departmentRepository.GetAllByCompanyAsync(companyId);
+        
+        return res.Select(DepartmentMapper.MapToDefaultResponse).ToList();
+    }
+
+    public async Task<ICollection<DepartmentDefaultResponse>> GetAllAsync()
+    {
+        var res = await _departmentRepository.GetAllAsync();
+        
+        return res.Select(DepartmentMapper.MapToDefaultResponse).ToList();
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        var dbDepartment = await _departmentRepository.GetByIdAsync(id);
+        
+        if (dbDepartment is null) throw new CompanyBadRequest($"Department with id {id} does not exist");
+
+        return await _departmentRepository.DeleteAsync(id);
     }
 }

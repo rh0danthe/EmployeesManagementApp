@@ -1,6 +1,7 @@
 ﻿using Application.Dto.Employee;
 using Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Presentation.Controllers;
 
@@ -9,39 +10,26 @@ namespace Presentation.Controllers;
 public class EmployeeController(IEmployeeService service) : Controller
 {
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] EmployeeCreateRequest employee)
+    public async Task<IActionResult> CreateAsync([FromBody] EmployeeCreateRequest employee, [FromQuery] [BindRequired] string departmentName)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        return Ok(await service.CreateAsync(employee));
+        return Ok(await service.CreateAsync(employee, departmentName));
     }
 
     [HttpPatch("{employeeId}")]
-    public async Task<IActionResult> UpdateAsync([FromBody] EmployeeUpdateRequest employee, [FromRoute] int employeeId)
+    public async Task<IActionResult> UpdateAsync([FromBody] EmployeeUpdateRequest employee, [FromRoute] int employeeId, [FromQuery] [BindRequired] string departmentName)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
         
-        return Ok(await service.UpdateAsync(employee, employeeId));
-    }
-
-    [HttpGet("{companyId}")]
-    public async Task<IActionResult> GetByCompanyAsync([FromRoute] int companyId)
-    {
-        return Ok(await service.GetByCompanyAsync(companyId));
-    }
-    
-    [HttpGet("{companyId}/{departmentName}")]
-    public async Task<IActionResult> GetByDepartmentAsync([FromRoute] int companyId, [FromRoute] string departmentName)
-    {
-        return Ok(await service.GetByDepartmentAsync(companyId, departmentName));
+        return Ok(await service.UpdateAsync(employee, employeeId, departmentName));
     }
 
     [HttpDelete("{employeeId}")]
-    public async Task<IActionResult> Delete([FromRoute] int employeeId)
+    public async Task<IActionResult> DeleteAsync([FromRoute] int employeeId)
     {
         return Ok(await service.DeleteAsync(employeeId));
     }
-
 }
