@@ -32,10 +32,10 @@ public class EmployeeController(IEmployeeService service) : Controller
         return Ok(await service.GetByCompanyAsync(companyId));
     }
     
-    [HttpGet]
-    public async Task<IActionResult> GetByDepartmentAsync([FromQuery] int companyId, [FromQuery] string name)
+    [HttpGet("{companyId}/{departmentName}")]
+    public async Task<IActionResult> GetByDepartmentAsync([FromRoute] int companyId, [FromRoute] string departmentName)
     {
-        return Ok(await service.GetByDepartmentAsync(companyId, name));
+        return Ok(await service.GetByDepartmentAsync(companyId, departmentName));
     }
 
     [HttpDelete("{employeeId}")]

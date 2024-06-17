@@ -134,7 +134,7 @@ public class EmployeeService : IEmployeeService
                     $"Error while updating passport for employee with id {updatedEmployee.Id}");
         }
 
-        updatedPassport = dbPassport;
+        else updatedPassport = dbPassport;
 
         return EmployeeMapper.MapToViewResponse(updatedEmployee, updatedDepartment, updatedPassport);
     }
@@ -171,7 +171,7 @@ public class EmployeeService : IEmployeeService
 
     public async Task<ICollection<EmployeeViewResponse>> GetByDepartmentAsync(int companyId, string departmentName)
     {
-        var dbDepartment = _departmentRepository.GetByNameAsync(StringCleaner.CleanInput(departmentName), companyId);
+        var dbDepartment = await _departmentRepository.GetByNameAsync(StringCleaner.CleanInput(departmentName), companyId);
         
         if (dbDepartment is null) throw new DepartmentNotFound($"Department with name {StringCleaner.CleanInput(departmentName)} in " +
                                                                $"company with id {companyId} does not exist");
@@ -200,6 +200,10 @@ public class EmployeeService : IEmployeeService
 
     public async Task<bool> DeleteAsync(int id)
     {
+        var dbEmployee = await _employeeRepository.GetByIdAsync(id);
+        
+        if (dbEmployee is null) throw new EmployeeNotFound($"Employee with id {id} does not exist");
+        
         return await _employeeRepository.DeleteAsync(id);
     }
 }

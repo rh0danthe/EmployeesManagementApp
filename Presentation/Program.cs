@@ -15,6 +15,7 @@ builder.Services.AddServiceDependencies();
 
 builder.Services.AddScoped<ExceptionHandlingMiddleware>();
     
+
 var app = builder.Build();
 
 app.Migrate<Program>();
