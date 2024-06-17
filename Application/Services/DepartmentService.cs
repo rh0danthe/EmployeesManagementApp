@@ -19,24 +19,24 @@ public class DepartmentService : IDepartmentService
         _companyRepository = companyRepository;
     }
 
-    public async Task<DepartmentDefaultResponse> CreateAsync(DepartmentDefaultRequest departmentDefault)
+    public async Task<DepartmentDefaultResponse> CreateAsync(DepartmentDefaultRequest department)
     {
-        var dbCompany = await _companyRepository.GetByIdAsync(departmentDefault.CompanyId);
+        var dbCompany = await _companyRepository.GetByIdAsync(department.CompanyId);
 
         if (dbCompany is null)
-            throw new CompanyNotFound($"Company with id {departmentDefault.CompanyId} does not exist");
+            throw new CompanyNotFound($"Company with id {department.CompanyId} does not exist");
         
-        var existingDepartment = await _departmentRepository.GetByNameAsync(StringCleaner.CleanInput(departmentDefault.Name), departmentDefault.CompanyId);
+        var existingDepartment = await _departmentRepository.GetByNameAsync(StringCleaner.CleanInput(department.Name), department.CompanyId);
         
-        if (existingDepartment is not null) throw new DepartmentBadRequest($"Department with name '{StringCleaner.CleanInput(departmentDefault.Name)}'" +
-                                                                           $"for company with id {departmentDefault.CompanyId} already exists");
+        if (existingDepartment is not null) throw new DepartmentBadRequest($"Department with name '{StringCleaner.CleanInput(department.Name)}'" +
+                                                                           $"for company with id {department.CompanyId} already exists");
         var dbDepartment = await _departmentRepository.CreateAsync(new Department()
         {
-            Name = StringCleaner.CleanInput(departmentDefault.Name),
-            Phone = StringCleaner.CleanInput(departmentDefault.Phone),
-            CompanyId = departmentDefault.CompanyId
+            Name = StringCleaner.CleanInput(department.Name),
+            Phone = StringCleaner.CleanInput(department.Phone),
+            CompanyId = department.CompanyId
         });
-        if (dbDepartment is null) throw new DepartmentBadRequest("Error while saving the departmentDefault");
+        if (dbDepartment is null) throw new DepartmentBadRequest("Error while saving the department");
         return DepartmentMapper.MapToDefaultResponse(dbDepartment);
     }
 
