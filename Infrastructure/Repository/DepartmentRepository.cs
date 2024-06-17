@@ -36,13 +36,13 @@ public class DepartmentRepository : IDepartmentRepository
         return await connection.QueryFirstOrDefaultAsync<Department>(Resourses.GetDepartmentByName, new {Name = name, CompanyId = companyId});
     }
 
-    public async Task<Department> UpdateAsync(Department department, int id)
+    public async Task<Department> UpdateAsync(Department department, int departmentId)
     {
         using var connection = await _factory.CreateAsync();
         
         var parameters = new
         {
-            Id = id,
+            Id = departmentId,
             Name = department.Name,
             Phone = department.Phone,
             CompanyId = department.CompanyId

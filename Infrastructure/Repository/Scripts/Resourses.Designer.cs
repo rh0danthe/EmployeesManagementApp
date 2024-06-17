@@ -232,7 +232,7 @@ namespace Infrastructure.Repository.Scripts {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на UPDATE &quot;Departments&quot; SET &quot;Name&quot; = @Name, &quot;Phone&quot; = @Phone, &quot;CompanyId&quot; = @CompanyId WHERE &quot;Id&quot; = @id RETURNING *;.
+        ///   Ищет локализованную строку, похожую на UPDATE &quot;Departments&quot; SET &quot;Name&quot; = @Name, &quot;Phone&quot; = @Phone, &quot;CompanyId&quot; = @CompanyId WHERE &quot;Id&quot; = @Id RETURNING *;.
         /// </summary>
         internal static string UpdateDepartment {
             get {

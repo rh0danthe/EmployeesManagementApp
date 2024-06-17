@@ -40,23 +40,36 @@ public class DepartmentService : IDepartmentService
         return DepartmentMapper.MapToDefaultResponse(dbDepartment);
     }
 
-    public async Task<DepartmentDefaultResponse> UpdateAsync(DepartmentDefaultRequest departmentDefault, int id)
+    public async Task<DepartmentDefaultResponse> UpdateAsync(DepartmentDefaultRequest department, int id)
     {
-        var dbCompany = await _companyRepository.GetByIdAsync(departmentDefault.CompanyId);
+        var dbCompany = await _companyRepository.GetByIdAsync(department.CompanyId);
 
         if (dbCompany is null)
-            throw new CompanyNotFound($"Company with id {departmentDefault.CompanyId} does not exist");
+            throw new CompanyNotFound($"Company with id {department.CompanyId} does not exist");
         
-        var dbDepartment = await _departmentRepository.UpdateAsync(new Department()
+        var dbDepartment =
+            await this._departmentRepository.GetByNameAsync(department.Name, department.CompanyId);
+        if (dbDepartment is not null)
+            throw new DepartmentBadRequest(
+                $"Department '{department.Name}' already exists in company with id {department.CompanyId}");
+
+        dbDepartment = await _departmentRepository.GetByIdAsync(id);
+        if (dbDepartment is null)
+            throw new DepartmentBadRequest(
+                $"Department with id {id} does not exist");
+
+        var parameters = new Department()
         {
-            Name = StringCleaner.CleanInput(departmentDefault.Name),
-            Phone = StringCleaner.CleanInput(departmentDefault.Phone),
-            CompanyId = departmentDefault.CompanyId
-        }, id);
+            Name = StringCleaner.CleanInput(department.Name),
+            Phone = StringCleaner.CleanInput(department.Phone),
+            CompanyId = department.CompanyId
+        };
         
-        if (dbDepartment is null) throw new DepartmentBadRequest($"Error while updating the departmentDefault with id {id}");
+        var updatedDepartment = await _departmentRepository.UpdateAsync(parameters, id);
         
-        return DepartmentMapper.MapToDefaultResponse(dbDepartment);
+        if (updatedDepartment is null) throw new DepartmentBadRequest($"Error while updating the department with id {id}");
+        
+        return DepartmentMapper.MapToDefaultResponse(updatedDepartment);
     }
 
     public async Task<ICollection<DepartmentDefaultResponse>> GetAllByCompanyAsync(int companyId)

@@ -1,0 +1,38 @@
+name: employees
+
+services:
+  employees.application:
+    image: employees.application
+    build:
+      context: .
+      dockerfile: Presentation/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    depends_on:
+      - database
+    networks:
+      - backend
+    restart: always
+    ports:
+      - "80:8080"
+  
+  database:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: 'employees_management_app_admin'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRES_DB: 'employees_management_app'
+    networks:
+      - backend
+    ports:
+      - "5411:5432"
+    volumes:
+      - database-pg:/var/lib/postgresql/data
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  database-pg:

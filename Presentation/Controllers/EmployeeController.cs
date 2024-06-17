@@ -19,7 +19,7 @@ public class EmployeeController(IEmployeeService service) : Controller
     }
 
     [HttpPatch("{employeeId}")]
-    public async Task<IActionResult> UpdateAsync([FromBody] EmployeeUpdateRequest employee, [FromRoute] int employeeId, [FromQuery] [BindRequired] string departmentName)
+    public async Task<IActionResult> UpdateAsync([FromBody] EmployeeUpdateRequest employee, [FromRoute] int employeeId, [FromQuery] string? departmentName)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);

@@ -98,13 +98,19 @@ public async Task<EmployeeViewResponse> UpdateAsync(EmployeeUpdateRequest employ
                                                            $" company with id {dbEmployee.CompanyId} for employee with id {id} does not exist");
 
 
-    var department = await this._departmentRepository.GetByNameAsync(departmentName, employee.CompanyId ?? dbEmployee.CompanyId);
-
-    if (department is null)
+    Department department;
+    if (departmentName != null)
     {
-        throw new DepartmentNotFound($"Department with name '{departmentName}' has not been found");
+        department =
+            await this._departmentRepository.GetByNameAsync(departmentName, employee.CompanyId ?? dbEmployee.CompanyId);
+
+        if (department is null)
+        {
+            throw new DepartmentNotFound($"Department with name '{departmentName}' has not been found");
+        }
     }
-    
+    else department = dbDepartment;
+
     var updatedEmployee = await _employeeRepository.UpdateAsync(new EmployeeUpdate()
     {
         Name = StringCleaner.CleanInput(employee.Name),
